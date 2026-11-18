@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Economy Bot – Eine eigene Wirtschaft für deinen Discord-Server</title>
+<style>
+:root{--bg:#fff;--alt:#f5f5f7;--tile:#fff;--text:#1d1d1f;--muted:#6e6e73;--line:#d2d2d7;--link:#c4122c;--accent:#d91e38;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 48px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1.05rem/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:rgba(255,255,255,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px)}
+h1,h2,h3{margin:0;letter-spacing:-.025em;line-height:1.07}
+a{color:inherit}
+:focus-visible{outline:3px solid #0a84ff;outline-offset:3px;border-radius:8px}
+.gnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:rgba(255,255,255,.8);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);color:#1d1d1f;border-bottom:1px solid rgba(0,0,0,.08)}
+.gnav-in{max-width:1024px;margin:0 auto;height:48px;display:flex;align-items:center;gap:20px;padding:0 22px;font-size:.8rem}
+.gnav a{text-decoration:none;color:#1d1d1f;opacity:.8}
+.gnav a:hover{opacity:1}
+.brand{font-weight:600;font-size:.9rem}
+.gl{display:flex;gap:28px;margin-left:auto}
+.dash{position:relative}
+.dash summary{list-style:none;cursor:pointer;background:rgba(0,0,0,.06);border-radius:980px;padding:5px 13px;font-weight:500;user-select:none}
+.dash summary::-webkit-details-marker{display:none}
+.dash[open] summary,.dash summary:hover{background:rgba(0,0,0,.12)}
+.menu{position:absolute;top:calc(100% + 12px);left:0;min-width:240px;background:#fff;border:1px solid #d2d2d7;border-radius:16px;padding:8px;display:grid;gap:2px;box-shadow:0 24px 48px -16px rgba(0,0,0,.25)}
+.menu a{padding:10px 12px;border-radius:10px;font-size:.92rem;opacity:1}
+.menu a:hover{background:#f5f5f7}
+.dark{background:#fff;color:#1d1d1f}
+.hero{text-align:center;padding:84px 22px 80px;overflow:hidden}
+.hero h1{font-size:clamp(3rem,11vw,6.4rem);font-weight:700;background:linear-gradient(180deg,#1d1d1f 40%,#d91e38);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:clamp(1.3rem,3.4vw,1.9rem);font-weight:500;color:#6e6e73;margin:14px auto 0;max-width:22ch;letter-spacing:-.01em}
+.links{display:flex;gap:22px;justify-content:center;align-items:center;margin-top:30px;flex-wrap:wrap}
+.pill{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;font-size:1.05rem;font-weight:500;padding:12px 24px;border-radius:980px;transition:filter .15s}
+.pill:hover{filter:brightness(1.15)}
+.lnk{color:#c4122c;text-decoration:none;font-size:1.1rem}
+.lnk:hover{text-decoration:underline}
+.chat{background:#313338;border-radius:20px;padding:18px;color:#dbdee1;text-align:left;font-size:.95rem;max-width:440px;margin:60px auto 0;box-shadow:0 40px 80px -30px rgba(224,36,63,.35)}
+.chat .cmd{font-size:.85rem;color:#949ba4;margin-bottom:10px}
+.chat .cmd b{color:#8c97ff;background:#5865f233;padding:1px 6px;border-radius:4px;font-weight:600}
+.embed{display:grid;grid-template-columns:1fr 70px;gap:4px 14px;background:#2b2d31;border-left:5px solid var(--accent);border-radius:6px;padding:14px 16px}
+.embed h3{font-size:1rem;font-weight:700;color:#fff;letter-spacing:0}
+.embed .av{grid-column:2;grid-row:1/4;width:70px;height:70px;border-radius:12px;background:linear-gradient(135deg,#d91e38,#5a0a16);display:grid;place-items:center;font-size:1.9rem}
+.embed p{margin:0 0 6px;grid-column:1;font-size:.92rem;line-height:1.4}
+.embed p b{color:#fff;display:block}
+.bar{grid-column:1/-1;margin-top:4px}
+.bar div{height:9px;border-radius:5px;background:#1e1f22;overflow:hidden}
+.bar span{display:block;height:100%;width:64%;background:#ff4560;border-radius:5px}
+.bar small{display:block;margin-top:5px;color:#949ba4;font-size:.8rem}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btns span{background:#4e5058;color:#fff;border-radius:6px;padding:7px 16px;font-weight:600;font-size:.88rem}
+.btns span:first-child{background:#248046}
+.wrap{max-width:1024px;margin:0 auto;padding:0 22px}
+.tiles{background:var(--alt);padding:14px 0 80px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tile{background:var(--tile);border-radius:28px;padding:52px 26px 0;text-align:center;overflow:hidden;min-height:540px;display:flex;flex-direction:column;align-items:center}
+.tile.blk{background:#000;color:#f5f5f7;--muted:#a1a1a6;--link:#ff6b7f}
+.kick{color:var(--link);font-weight:600;font-size:1.1rem;margin-bottom:8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.tile h2{font-size:clamp(1.8rem,3.6vw,2.5rem);font-weight:700;max-width:14ch}
+.tile p{color:var(--muted);font-size:1.1rem;max-width:30ch;margin:14px 0 0}
+.vis{margin-top:auto;padding:34px 0 44px;width:100%;display:flex;justify-content:center}
+.stats{width:100%;max-width:300px;display:grid;gap:10px;text-align:left}
+.stat{background:var(--alt);border-radius:16px;padding:14px 18px}
+.stat small{display:block;color:var(--muted);font-size:.82rem}
+.stat b{font-size:1.45rem;letter-spacing:-.02em}
+.stat.big{background:var(--accent);color:#fff}
+.stat.big small{color:#ffd9de}
+.chart{width:100%;max-width:340px;height:auto}
+.wheel{width:170px;height:170px;border-radius:50%;background:repeating-conic-gradient(#d91e38 0 9.73deg,#111 0 19.46deg);border:8px solid #f0c35c;position:relative;animation:spin 14s linear infinite;box-shadow:0 0 0 4px #3a2a08}
+.wheel::after{content:"";position:absolute;inset:42%;border-radius:50%;background:#1f7a46;border:4px solid #f0c35c}
+.coin{width:140px;height:140px;border-radius:50%;background:radial-gradient(circle at 30% 28%,#fff0bd,#f0c35c 48%,#b8862b);display:grid;place-items:center;font-size:3.2rem;font-weight:700;color:#7a5410;box-shadow:0 20px 40px -12px rgba(240,195,92,.5);animation:flip 3.2s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes flip{0%,100%{transform:rotateY(0)}50%{transform:rotateY(540deg)}}
+.rewards{padding:100px 0;text-align:center}
+h2.big{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:700}
+.lead{color:var(--muted);font-size:1.25rem;margin:14px auto 0;max-width:34ch}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);margin-top:60px}
+.rw{padding:10px 20px}
+.rw+.rw{border-left:1px solid var(--line)}
+.rw .kick{display:block;margin-bottom:12px}
+.rw strong{display:block;font-size:clamp(1.8rem,4.4vw,2.9rem);font-weight:700;letter-spacing:-.03em;background:linear-gradient(180deg,#f0c35c,#d9892b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rw span{color:var(--muted)}
+.cmds{background:var(--alt);padding:100px 0;text-align:center}
+.row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:56px;text-align:left}
+.cc{background:var(--tile);border-radius:24px;padding:28px 22px 30px}
+.ic{width:52px;height:52px;border-radius:50%;background:var(--alt);display:grid;place-items:center;font-size:1.6rem;margin-bottom:46px}
+.cc code{font:600 1.15rem ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--link)}
+.cc p{margin:10px 0 0;color:var(--muted);font-size:.95rem;line-height:1.45}
+.final{text-align:center;padding:120px 22px}
+.final h2{font-size:clamp(2.4rem,7vw,4.4rem);font-weight:700}
+.final p{color:#6e6e73;font-size:1.25rem;margin:16px 0 34px}
+.final .pill{font-size:1.15rem;padding:15px 30px}
+footer{background:var(--alt);color:var(--muted);font-size:.78rem;padding:22px;text-align:center}
+@media (max-width:860px){
+  .gl{display:none}
+  .gnav-in .pill{margin-left:auto}
+  .hero{padding:56px 22px 60px}
+  .tgrid{grid-template-columns:1fr}
+  .tile{min-height:460px}
+  .rgrid{grid-template-columns:1fr;gap:34px}
+  .rw+.rw{border-left:0;border-top:1px solid var(--line);padding-top:34px}
+  .row{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;margin:46px -22px 0;padding:0 22px 8px}
+  .cc{flex:0 0 76%;scroll-snap-align:center}
+}
+@media (prefers-reduced-motion:reduce){.wheel,.coin{animation:none}html{scroll-behavior:auto}}
+
+.intro{position:fixed;inset:0;z-index:100;background:#fff;display:grid;place-items:center;animation:introOut .7s ease 1.5s forwards}
+.intro div{display:flex;flex-direction:column;align-items:center;gap:18px}
+.intro i{width:84px;height:84px;border-radius:24px;background:var(--accent);color:#fff;display:grid;place-items:center;font-style:normal;font-size:2.6rem;font-weight:700;animation:pop .9s cubic-bezier(.2,.8,.2,1) both}
+.intro span{font-size:1.4rem;font-weight:600;letter-spacing:-.02em;animation:rise .8s .35s both}
+@keyframes introOut{to{opacity:0;visibility:hidden}}
+@keyframes pop{from{transform:scale(.4) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.hero h1,.hero .sub,.hero .links,.hero .chat{animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+.hero h1{animation-delay:1.7s}.hero .sub{animation-delay:1.85s}.hero .links{animation-delay:2s}.hero .chat{animation-delay:2.15s}
+.js .rv{opacity:0;transform:translateY(44px);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+.js .rv.in{opacity:1;transform:none}
+.js .tile:nth-child(even),.js .rw:nth-child(2),.js .cc:nth-child(even){transition-delay:.12s}
+@media (prefers-reduced-motion:reduce){.intro{display:none}.hero h1,.hero .sub,.hero .links,.hero .chat{animation:none}.js .rv{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="intro" aria-hidden="true"><div><i>$</i><span>Economy Bot</span></div></div>
+<header class="gnav">
+  <div class="gnav-in">
+    <details class="dash" id="dash">
+      <summary>☰ Dashboard</summary>
+      <div class="menu">
+        <a href="#top">Übersicht</a>
+        <a href="#features">Funktionen</a>
+        <a href="#belohnungen">Belohnungen</a>
+        <a href="#befehle">Alle Befehle</a>
+        <a href="#spiele">Roulette und Coinflip</a>
+        <a href="#server">Discord-Server</a>
+      </div>
+    </details>
+    <a class="brand" href="#top">Economy Bot</a>
+    <div class="gl"><a href="#features">Funktionen</a><a href="#belohnungen">Belohnungen</a><a href="#befehle">Befehle</a></div>
+  </div>
+</header>
+
+<section class="hero dark" id="top">
+  <h1>Economy Bot.</h1>
+  <p class="sub">Eine eigene Wirtschaft für deinen Server.</p>
+  <div class="links">
+    <a class="pill" href="#befehle">Alle Befehle ansehen</a>
+    <a class="lnk" href="https://discord.gg/Kn39UcZJE" target="_blank" rel="noopener">Zum Discord-Server ›</a>
+  </div>
+  <div class="chat" aria-label="Beispiel für den Befehl /balance">
+    <div class="cmd"><b>/balance</b> von Max</div>
+    <div class="embed">
+      <h3>Kontostand von Max</h3>
+      <div class="av" aria-hidden="true">📈</div>
+      <p><b>Geldbeutel</b>$ 184.500</p>
+      <p><b>Bankguthaben</b>$ 455.000</p>
+      <p><b>Insgesamt</b>$ 639.500</p>
+      <div class="bar"><div><span></span></div><small>64 % bis zur ersten Million</small></div>
+    </div>
+    <div class="btns"><span>Einzahlen</span><span>Abheben</span></div>
+  </div>
+</section>
+
+<section class="tiles" id="features">
+  <div class="wrap tgrid">
+    <article class="tile">
+      <span class="kick">/balance</span>
+      <h2>Dein Geld. Immer im Blick.</h2>
+      <p>Geldbeutel, Bank und Gesamtsumme. Ein- und Auszahlen per Knopf.</p>
+      <div class="vis"><div class="stats">
+        <div class="stat"><small>Geldbeutel</small><b>$ 184.500</b></div>
+        <div class="stat"><small>Bankguthaben</small><b>$ 455.000</b></div>
+        <div class="stat big"><small>Insgesamt</small><b>$ 639.500</b></div>
+      </div></div>
+    </article>
+    <article class="tile blk">
+      <span class="kick">/trade</span>
+      <h2>Kaufen. Verkaufen. Gewinnen.</h2>
+      <p>Erst das Chart ansehen, dann entscheiden. Gewinn und Verlust bis 50 % deines Einsatzes.</p>
+      <div class="vis">
+        <svg class="chart" viewBox="0 0 340 130" role="img" aria-label="Kurs-Chart">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#30d158" stop-opacity=".35"/><stop offset="1" stop-color="#30d158" stop-opacity="0"/></linearGradient></defs>
+          <path d="M0 100 L40 84 L75 92 L115 58 L150 70 L190 38 L230 52 L270 22 L340 30 L340 130 L0 130Z" fill="url(#g)"/>
+          <path d="M0 100 L40 84 L75 92 L115 58 L150 70 L190 38 L230 52 L270 22 L340 30" fill="none" stroke="#30d158" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </article>
+    <article class="tile blk" id="spiele">
+      <span class="kick">Roulette</span>
+      <h2>Zahl, Farbe, Glück.</h2>
+      <p>Wette auf eine Zahl, Schwarz, Rot oder Grün. Einsatz ab 1.000.</p>
+      <div class="vis"><div class="wheel" aria-hidden="true"></div></div>
+    </article>
+    <article class="tile">
+      <span class="kick">Coinflip</span>
+      <h2>Kopf oder Zahl.</h2>
+      <p>Such dir deine Seite aus und wirf per Knopf. Triffst du, verdoppelst du.</p>
+      <div class="vis"><div class="coin" aria-hidden="true">$</div></div>
+    </article>
+  </div>
+</section>
+
+<section class="rewards" id="belohnungen">
+  <div class="wrap">
+    <h2 class="big">Belohnungen.</h2>
+    <p class="lead">Je länger du wartest, desto mehr bekommst du.</p>
+    <div class="rgrid">
+      <div class="rw"><span class="kick">/hourly</span><strong>500 – 1.000</strong><span>jede Stunde</span></div>
+      <div class="rw"><span class="kick">/daily</span><strong>1.000 – 5.000</strong><span>jeden Tag</span></div>
+      <div class="rw"><span class="kick">/weekly</span><strong>10.000 – 20.000</strong><span>jede Woche</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="cmds" id="befehle">
+  <div class="wrap">
+    <h2 class="big">Alle Befehle.</h2>
+    <p class="lead">Fünf Befehle. Mehr brauchst du nicht.</p>
+    <div class="row">
+      <div class="cc"><div class="ic" aria-hidden="true">💰</div><code>/balance</code><p>Dein Kontostand mit Ein- und Auszahlen.</p></div>
+      <div class="cc"><div class="ic" aria-hidden="true">⏱️</div><code>/hourly</code><p>Zufällige Belohnung jede Stunde.</p></div>
+      <div class="cc"><div class="ic" aria-hidden="true">☀️</div><code>/daily</code><p>Zufällige Belohnung jeden Tag.</p></div>
+      <div class="cc"><div class="ic" aria-hidden="true">📅</div><code>/weekly</code><p>Zufällige Belohnung jede Woche.</p></div>
+      <div class="cc"><div class="ic" aria-hidden="true">📈</div><code>/trade</code><p>Kaufen oder Verkaufen nach Chart.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="final dark" id="server">
+  <h2>Komm auf unseren Server.</h2>
+  <p>Tritt dem Discord-Server bei.</p>
+  <a class="pill" href="https://discord.gg/Kn39UcZJE" target="_blank" rel="noopener">Zum Discord-Server</a>
+</section>
+
+<footer>Economy Bot · Alle Beträge sind Spielgeld.</footer>
+
+<script>
+(function(){
+  var d=document.getElementById('dash');
+  if(!d)return;
+  d.addEventListener('click',function(e){if(e.target.closest('.menu a'))d.removeAttribute('open');});
+  document.addEventListener('click',function(e){if(!d.contains(e.target))d.removeAttribute('open');});
+})();
+</script>
+<script>
+(function(){
+  var r=document.documentElement;r.classList.add('js');
+  var els=document.querySelectorAll('.tile,.rw,.cc,.rewards .big,.rewards .lead,.cmds .big,.cmds .lead,.final h2,.final p,.final .pill');
+  els.forEach(function(el){el.classList.add('rv')});
+  if(!('IntersectionObserver' in window)){els.forEach(function(el){el.classList.add('in')});return;}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
+  els.forEach(function(el){io.observe(el)});
+})();
+</script>
+</body>
+</html>
